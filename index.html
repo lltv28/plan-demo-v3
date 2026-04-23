@@ -4467,17 +4467,22 @@
         const distance = Math.abs(top - contentArea.scrollTop);
         const dur = Math.max(900, Math.min(2000, distance * 5));
         smoothScrollTo(top - 16, dur);
-        if (typeof ResizeObserver !== 'undefined') {
-          _resizeObs = new ResizeObserver(() => {
-            if (gen !== _scrollGen) return;
-            const newTop = offsetTopIn(el, contentArea);
-            smoothScrollTo(newTop - 16, 600);
-          });
-          _resizeObs.observe(el);
-          _resizePinTimer = setTimeout(() => {
-            if (_resizeObs) { _resizeObs.disconnect(); _resizeObs = null; }
-          }, 1400);
-        }
+        // Defer the ResizeObserver until the main scroll has landed, so
+        // stream-driven reflows don't interrupt the initial animation mid-way.
+        setTimeout(() => {
+          if (gen !== _scrollGen) return;
+          if (typeof ResizeObserver !== 'undefined') {
+            _resizeObs = new ResizeObserver(() => {
+              if (gen !== _scrollGen) return;
+              const newTop = offsetTopIn(el, contentArea);
+              smoothScrollTo(newTop - 16, 700);
+            });
+            _resizeObs.observe(el);
+            _resizePinTimer = setTimeout(() => {
+              if (_resizeObs) { _resizeObs.disconnect(); _resizeObs = null; }
+            }, 1800);
+          }
+        }, dur + 80);
       }));
     }
 
@@ -5372,7 +5377,7 @@
       if (Math.abs(delta) < 1) return;
       const dur = duration || 600;
       const t0 = performance.now();
-      const ease = (t) => 1 - Math.pow(1 - t, 3); // ease-out cubic
+      const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; // ease-in-out cubic
       const step = (now) => {
         const t = Math.min(1, (now - t0) / dur);
         contentArea.scrollTop = start + delta * ease(t);
