@@ -4465,13 +4465,13 @@
         if (gen !== _scrollGen) return;
         const top = offsetTopIn(el, contentArea);
         const distance = Math.abs(top - contentArea.scrollTop);
-        const dur = Math.max(300, Math.min(1000, distance * 2.2));
+        const dur = Math.max(900, Math.min(2000, distance * 5));
         smoothScrollTo(top - 16, dur);
         if (typeof ResizeObserver !== 'undefined') {
           _resizeObs = new ResizeObserver(() => {
             if (gen !== _scrollGen) return;
             const newTop = offsetTopIn(el, contentArea);
-            smoothScrollTo(newTop - 16, 260);
+            smoothScrollTo(newTop - 16, 600);
           });
           _resizeObs.observe(el);
           _resizePinTimer = setTimeout(() => {
