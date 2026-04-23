@@ -4465,7 +4465,7 @@
         if (gen !== _scrollGen) return;
         const top = offsetTopIn(el, contentArea);
         const distance = Math.abs(top - contentArea.scrollTop);
-        const dur = Math.max(900, Math.min(2000, distance * 5));
+        const dur = Math.max(540, Math.min(1200, distance * 3));
         smoothScrollTo(top - 16, dur);
         // Defer the ResizeObserver until the main scroll has landed, so
         // stream-driven reflows don't interrupt the initial animation mid-way.
